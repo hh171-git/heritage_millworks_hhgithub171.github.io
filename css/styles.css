@@ -29,6 +29,7 @@
 }
 
 /* === LIGHTBOX === */
+/* Used by the portfolio page and reusable gallery lightbox overlay. */
 .portfolio-lightbox {
   position: fixed;
   inset: 0;
@@ -151,7 +152,7 @@ a {
 
 a:hover,
 a:active {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 h1,
@@ -215,13 +216,6 @@ p {
   white-space: nowrap;
 }
 
-.contact-hero {
-  background-image: '/images/fkitchen9.jpg';
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-}
 .contact-section-overlay {
   margin-top: -146px;
   position: relative;
@@ -242,10 +236,10 @@ p {
 }
 
 /* === NAVIGATION === */
+/* Primary site navigation for the React Nav component, including dropdown interaction. */
 .site-nav {
   background-color: var(--color-secondary);
-  /* Matches tree-logo.gif background */
-  border-bottom: 2px var(--color-secondary);
+  border-bottom: 2px solid var(--color-primary);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.75);
   position: sticky;
   top: 0;
@@ -258,7 +252,6 @@ p {
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
-  /* 0 top/bottom makes logo fit exactly, 2rem keeps a slight edge buffer */
 }
 
 .nav-brand {
@@ -269,7 +262,6 @@ p {
 
 .nav-logo {
   height: 75px;
-  /* Increases size to strongly fit the header */
   width: auto;
   display: block;
 }
@@ -293,14 +285,11 @@ p {
   text-transform: uppercase;
   letter-spacing: 1px;
   white-space: nowrap;
-  /* Forces words to stay on the same line */
 }
 
 .nav-link:hover {
   background-color: var(--color-secondary);
-  /* Tan (matches logo background) */
   color: var(--color-text-light);
-  /* Dark text on tan */
 }
 
 /* === DROPDOWN CSS === */
@@ -316,11 +305,9 @@ p {
   top: 100%;
   left: 0;
   background-color: var(--color-secondary);
-  /* Matches navbar */
   min-width: 240px;
   list-style: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    /* Black bottom accent */
 }
 
 .nav-item.dropdown:hover .dropdown-menu {
@@ -342,11 +329,11 @@ p {
 
 .dropdown-item:hover {
   background-color: var(--color-secondary);
-  /* Tan (matches logo background) */
   color: var(--color-text-light);
 }
 
-/* === HERO SECTION (HOME PAGE) === */
+/* === HERO SECTION === */
+/* Shared hero block used on Home, Portfolio, and Contact pages. Supports photo backgrounds, overlay text, and hero pagination controls. */
 .hero-section {
   background: var(--color-secondary);
   min-height: 75vh;
@@ -360,7 +347,7 @@ p {
   text-align: center;
   color: var(--color-text-light);
   position: relative;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .hero-section::before {
@@ -371,7 +358,6 @@ p {
   right: 0;
   bottom: 0;
   background: rgba(40, 40, 40, 0.2);
-  /* Dark brown overlay */
   z-index: 2;
 }
 
@@ -437,7 +423,7 @@ p {
 }
 
 .hero-dot--active {
-  background: white; /* filled in when active */
+  background: white;
 }
 
 .hero-dot:hover {
@@ -445,6 +431,7 @@ p {
 }
 
 .hero-link-btn {
+  /* Shared hero CTA button styling. */
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -457,12 +444,11 @@ p {
   font-weight: 600;
   letter-spacing: 0.03em;
   cursor: pointer;
-  padding: 0;
   transition: gap 0.3s ease;
 }
 
 .hero-link-btn:hover {
-  gap: 1rem; /* arrow slides away from text on hover */
+  gap: 1rem;
 }
 
 .hero-link-arrow {
@@ -471,10 +457,10 @@ p {
 }
 
 .hero-link-btn:hover .hero-link-arrow {
-  transform: translateX(5px); /* arrow nudges right on hover */
+  transform: translateX(5px);
 }
 
-/* Bottom-right hero button */
+/* Bottom-right hero button, used on Home and Contact hero panels. */
 .hero-cta-btn {
   position: absolute;
   bottom: 2.5rem;
@@ -502,7 +488,7 @@ p {
   transform: translateX(5px);
 }
 
-/* Modal overlay */
+/* Modal overlay for the Contact form modal window. */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -514,7 +500,7 @@ p {
   padding: 1rem;
 }
 
-/* Modal box */
+/* Modal box used by the ContactModal component. */
 .modal-box {
   background: var(--color-bg-section);
   border-radius: 8px;
@@ -531,7 +517,7 @@ p {
   margin-bottom: 1.5rem;
 }
 
-/* Close button */
+/* Close button used inside modal popups. */
 .modal-close {
   position: absolute;
   top: 1rem;
@@ -650,26 +636,21 @@ p {
 
 .work-card:hover .work-card-img img {
   transform: scale(1.05);
-  /* Capizzi smooth zoom-in effect */
 }
 
 .work-card-bottom {
   padding: 0.8rem 1.2rem;
-  /* Shrunk height */
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: var(--color-primary);
-  /* Match header/footer black */
   color: var(--color-text-light);
-  /* White title */
   border-bottom: 3px solid transparent;
   transition: border-bottom 0.3s ease;
 }
 
 .work-card:hover .work-card-bottom {
   border-bottom-color: var(--color-primary);
-  /* Tan accent line on hover */
 }
 
 .work-card-title {
@@ -680,16 +661,15 @@ p {
 .work-card-arrow {
   font-size: 1.5rem;
   color: var(--color-secondary);
-  /* Golden arrow */
   transition: transform 0.3s ease;
 }
 
 .work-card:hover .work-card-arrow {
   transform: translateX(5px);
-  /* Arrow subtly points right on hover */
 }
 
 /* === TESTIMONIALS SECTION === */
+/* Homepage testimonial carousel and quote cards used by the Testimonials component. */
 .testimonials-section {
   background: var(--color-bg-section);
   padding: 4rem 2rem;
@@ -708,13 +688,11 @@ p {
   gap: 1rem;
 }
 
-/* Clips to exactly 3 cards wide */
 .testimonials-wrapper {
   flex: 1;
   overflow: hidden;
 }
 
-/* Track holds 5 cards in a row, no wrapping */
 .testimonials-track {
   display: flex;
   gap: 1.5rem;
@@ -837,7 +815,8 @@ p {
   color: var(--color-text-dark);
 }
 
-/* === CONTACT/LOCATION GRID === */
+/* === CONTACT PAGE GRID === */
+/* Contact page two-column layout for the form and location/info panel. */
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -863,9 +842,9 @@ p {
 }
 
 /* === FOOTER === */
+/* Site footer styling for the bottom brand block and legal/info text. */
 .site-footer {
   background-color: #0D0B09;
-  /* Match Header */
   color: var(--color-text-light);
   padding: 3rem 1.5rem;
   text-align: center;
@@ -878,7 +857,8 @@ p {
   font-size: 1rem;
 }
 
-/* === LIGHTBOX & GALLERY MINIMAL PORT === */
+/* === GALLERY === */
+/* Thumbnail gallery used by portfolio image collections and gallery grids. */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -896,15 +876,14 @@ p {
 
 .gallery a:hover img {
   transform: scale(1.03);
-  border-color: var(--color-accent);
+  border-color: var(--color-primary);
 }
 
 /* === PRE-FOOTER INFO BAR === */
+/* Bottom info section with brand and quick links, just above the footer. */
 .pre-footer {
   background-color: var(--color-secondary);
-  /* Matches intro section */
   border: 1px solid rgba(0, 0, 0, 0.1);
-  /* Matches intro section outline */
   padding: 4rem 2rem;
 }
 
@@ -1061,6 +1040,7 @@ p {
 }
 
 /* === PORTFOLIO PAGE === */
+/* PortfolioPage image grid and lightbox cards. */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1144,6 +1124,7 @@ p {
 }
 
 /* === ABOUT PAGE === */
+/* About page layout for the company overview and embedded shop showcase. */
 .about-overview {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1229,7 +1210,7 @@ p {
 
 .about-shop-images {
   position: relative;
-  height: 480px; /* controls total height of the stacked image area */
+  height: 480px;
 }
 
 .shop-img {
@@ -1248,8 +1229,8 @@ p {
 }
 
 .shop-img--bottom {
-  top: 250px;   /* how far down the bottom image sits */
-  left: 50%;    /* shifts it to the right so it overlaps the top image's corner */
+  top: 250px;
+  left: 50%;
 }
 
 @media (max-width: 768px) {
@@ -1281,6 +1262,7 @@ p {
 }
 
 .contact-map {
+  /* Embedded Google map on the Contact page. */
   width: 100%;
   margin-top: 1rem;
 }
