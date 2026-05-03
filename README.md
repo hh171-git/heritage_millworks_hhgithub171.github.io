@@ -1,4 +1,4 @@
-# Heritage Wood Co. — Website
+# README.md - Heritage Wood Co. 
 
 This is a single-page React application I built for my Dad's company, 
 Heritage Wood Co. (originally Heritage Millworks), a family-run custom 
