@@ -1,4 +1,5 @@
-# DESIGN.md — Heritage Wood Co. Website
+# DESIGN.md 
+### Heritage Wood Co. - Website
 
 <br>
 
