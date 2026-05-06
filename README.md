@@ -230,3 +230,8 @@ terminal, navigate back to the project folder, and run
 > Heritage Wood Co. is currently undergoing a name change from 
 > "Heritage Millworks — Heritage Wood Co." this is why there is a name discrepancy between 
 > the old and new websites.
+
+📍 9436 State Hwy 198, Guys Mills, PA 16327  
+📞 (814)-853-0323  
+✉️ heritagemillworks@windstream.net  
+🕐 Mon–Fri: 8:00 AM – 5:00 PM
