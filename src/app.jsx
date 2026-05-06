@@ -2,9 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, ValidationError } from '@formspree/react';
 import { useRef } from 'react';
 
+// Main SPA file: core page components, lightbox/gallery, contact modal, and navigation.
+// This app uses in-file state to switch pages instead of a routing library.
+
 /* ═══════════════════════════════════════════════════════════════
    1. NAVIGATION DATA
    ═══════════════════════════════════════════════════════════════ */
+// Nav items used by the header menu and dropdown.
 const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
   {
@@ -28,10 +32,12 @@ const NAV_ITEMS = [
    2. LIGHTBOX & GALLERY GRID
    (Re-used for future new images)
    ═══════════════════════════════════════════════════════════════ */
+// Modal lightbox component with keyboard support and next/previous controls.
 function Lightbox({ images, startIndex, onClose }) {
   const [index, setIndex] = useState(startIndex);
   const [loading, setLoading] = useState(true);
 
+  // If no images are provided, don't render the lightbox.
   if (!images || images.length === 0) return null;
 
   const total = images.length;
@@ -40,8 +46,10 @@ function Lightbox({ images, startIndex, onClose }) {
   const goNext = useCallback(() => setIndex(i => (i + 1) % total), [total]);
   const goPrev = useCallback(() => setIndex(i => (i - 1 + total) % total), [total]);
 
+  // Reset loading whenever the active image changes.
   useEffect(() => { setLoading(true); }, [index]);
 
+  // Enable Esc / left / right keyboard navigation while lightbox is open.
   useEffect(() => {
     function handleKey(e) {
       if (e.key === 'Escape') onClose();
@@ -53,11 +61,13 @@ function Lightbox({ images, startIndex, onClose }) {
   }, [onClose, goNext, goPrev]);
 
   return (
+    // Clicking outside the lightbox content closes it.
     <div id="lightboxOverlay" onClick={onClose}>
       <div id="lightbox" onClick={e => e.stopPropagation()}>
         <div className="lb-outerContainer">
           <div className="lb-container">
             {loading && (
+              // Show a loading state until the image finishes loading.
               <div className="lb-loader">
                 <span>Loading...</span>
               </div>
@@ -69,8 +79,8 @@ function Lightbox({ images, startIndex, onClose }) {
               onLoad={() => setLoading(false)}
             />
             <div className="lb-nav">
-              <button className="lb-prev" aria-label="Previous image" onClick={(e) => { e.preventDefault(); goPrev(); }} />
-              <button className="lb-next" aria-label="Next image" onClick={(e) => { e.preventDefault(); goNext(); }} />
+              <button className="lb-prev" aria-label="Previous image" onClick={goPrev} />
+              <button className="lb-next" aria-label="Next image" onClick={goNext} />
             </div>
           </div>
           <div className="lb-dataContainer">
@@ -79,7 +89,7 @@ function Lightbox({ images, startIndex, onClose }) {
                 <span className="lb-number">{index + 1} / {total}</span>
               </div>
               <div className="lb-close">
-                <button aria-label="Close lightbox" onClick={(e) => { e.preventDefault(); onClose(); }}>X</button>
+                <button aria-label="Close lightbox" onClick={onClose}>X</button>
               </div>
             </div>
           </div>
@@ -89,9 +99,12 @@ function Lightbox({ images, startIndex, onClose }) {
   );
 }
 
+// Thumbnail gallery component used throughout interior pages.
+// Clicking a thumbnail opens the reusable lightbox above.
 function GalleryGrid({ images, embedded }) {
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
+  // Render placeholder text if the gallery list is empty.
   if (!images || images.length === 0) {
     return <p><em>Images coming soon...</em></p>;
   }
@@ -100,6 +113,7 @@ function GalleryGrid({ images, embedded }) {
     <div>
       <div className={`gallery${embedded ? ' embedded' : ''}`}>
         {images.map((img, i) => (
+          // Thumbnail links use anchor tags so right-click and image copy still work.
           <a
             key={img.id}
             href={img.src}
@@ -123,7 +137,10 @@ function GalleryGrid({ images, embedded }) {
 
 /* Header logic has been merged into the Navigation bar below */
 
+// Pre-footer section that appears above the site footer.
+// Contains brand info, office details, useful links, and social buttons.
 function PreFooter({ onNavigate }) {
+  // Useful links shown in the pre-footer for quick navigation.
   const usefulLinks = [
     { id: 'home', label: 'Home' },
     { id: 'portfolio', label: 'Portfolio' },
@@ -174,6 +191,7 @@ function PreFooter({ onNavigate }) {
           <h4 className="pf-heading">Useful Links</h4>
           <ul className="pf-list pf-links">
             {usefulLinks.map(link => (
+              // Each useful link updates the current page without a browser reload.
               <li key={link.id}>
                 <a
                   href={`#${link.id}`}
@@ -211,6 +229,7 @@ function PreFooter({ onNavigate }) {
   );
 }
 
+// Simple site footer shown on every page.
 function Footer() {
   const year = new Date().getFullYear();
   return (
@@ -227,7 +246,18 @@ function Footer() {
 /* ═══════════════════════════════════════════════════════════════
    4. NAVIGATION (with dropdown)
    ═══════════════════════════════════════════════════════════════ */
+// Main site header navigation component.
+// Supports standard links plus a custom cabinetry dropdown menu.
 function Nav({ currentPage, onNavigate }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const navigateAndClose = (id) => {
+    setMenuOpen(false);
+    setDropdownOpen(false);
+    onNavigate(id);
+  };
+
   return (
     <nav className="site-nav">
       <div className="nav-inner">
@@ -235,21 +265,44 @@ function Nav({ currentPage, onNavigate }) {
           <img src="/images/tree-logo.gif" alt="Heritage Wood Co. Logo" className="nav-logo" />
           <span className="logo-text">HERITAGE WOOD CO.</span>
         </div>
-        <ul className="nav-menu">
+        <button
+          className={`nav-toggle ${menuOpen ? 'nav-toggle--open' : ''}`}
+          type="button"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          onClick={() => setMenuOpen((open) => {
+            if (open) setDropdownOpen(false);
+            return !open;
+          })}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <ul className={`nav-menu ${menuOpen ? 'nav-menu--open' : ''}`}>
           {NAV_ITEMS.map((item) => {
+            // Highlight the current page or the current dropdown child.
             const isActive = currentPage === item.id || (item.children && item.children.some(child => child.id === currentPage));
 
             if (item.isDropdown) {
               return (
-                <li key={item.id} className={`nav-item dropdown ${isActive ? 'active' : ''}`}>
-                  <span className="nav-link dropdown-toggle">{item.label}</span>
+                <li key={item.id} className={`nav-item dropdown ${isActive ? 'active' : ''} ${dropdownOpen ? 'dropdown-open' : ''}`}>
+                  <span
+                    className="nav-link dropdown-toggle"
+                    role="button"
+                    aria-expanded={dropdownOpen}
+                    onClick={() => setDropdownOpen((open) => !open)}
+                  >
+                    {item.label}
+                  </span>
                   <ul className="dropdown-menu">
                     {item.children.map(child => (
+                      // Dropdown child link for a specific cabinetry page.
                       <li key={child.id}>
                         <a
                           href={`#${child.id}`}
                           className={`dropdown-item ${currentPage === child.id ? 'active' : ''}`}
-                          onClick={(e) => { e.preventDefault(); onNavigate(child.id); }}
+                          onClick={(e) => { e.preventDefault(); navigateAndClose(child.id); }}
                         >
                           {child.label}
                         </a>
@@ -265,7 +318,7 @@ function Nav({ currentPage, onNavigate }) {
                 <a
                   href={`#${item.id}`}
                   className="nav-link"
-                  onClick={e => { e.preventDefault(); onNavigate(item.id); }}
+                  onClick={e => { e.preventDefault(); navigateAndClose(item.id); }}
                 >
                   {item.label}
                 </a>
@@ -282,6 +335,7 @@ function Nav({ currentPage, onNavigate }) {
 /* ═══════════════════════════════════════════════════════════════
    5. BREADCRUMB
    ═══════════════════════════════════════════════════════════════ */
+// Small breadcrumb shown on interior pages for quick home navigation.
 function Breadcrumb({ label, onNavigate }) {
   return (
     <div className="breadcrumb">
@@ -296,6 +350,7 @@ function Breadcrumb({ label, onNavigate }) {
 /* ═══════════════════════════════════════════════════════════════
    6. PAGE COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
+// Home page and interior page components start here.
 
 function Testimonials() {
   const reviews = [
@@ -328,21 +383,61 @@ function Testimonials() {
   const n = reviews.length;
   const [index, setIndex] = useState(0);
   const [sliding, setSliding] = useState(false);
+  // Offset is used for the slide animation on the testimonial track.
   const [offset, setOffset] = useState(0); // pixel offset for animation
+  const [visibleCards, setVisibleCards] = useState(() => (typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 3));
+  const [wrapperWidth, setWrapperWidth] = useState(0);
   const trackRef = useRef(null);
 
-  const VISIBLE = 3;
+  useEffect(() => {
+    const updateVisibleCards = () => {
+      setVisibleCards(window.innerWidth <= 768 ? 1 : 3);
+    };
+
+    const updateWrapperWidth = () => {
+      const width = trackRef.current?.parentElement?.offsetWidth || 0;
+      setWrapperWidth(width);
+    };
+
+    const handleResize = () => {
+      updateVisibleCards();
+      updateWrapperWidth();
+    };
+
+    updateVisibleCards();
+    updateWrapperWidth();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const VISIBLE = visibleCards;
+  const isMobileCarousel = VISIBLE === 1;
+  const [slideDirection, setSlideDirection] = useState(null);
+  const MOBILE_CARDS = 3;
+  const mobileStep = wrapperWidth ? wrapperWidth : 0;
 
   // Get card at position relative to current index
   const getReview = (i) => reviews[(i + n) % n];
 
   // Cards rendered: one before, VISIBLE visible, one after = VISIBLE + 2 total
   // Track starts translated so the "before" card is hidden to the left
-  const cardWidthPercent = 100 / VISIBLE; // each card = 1/3 of wrapper
+  const cardWidthPercent = 100 / VISIBLE;
 
+  // Slide the testimonial cards left or right.
   const slide = (dir) => {
     if (sliding) return;
+    setSlideDirection(dir);
     setSliding(true);
+
+    if (isMobileCarousel) {
+      setTimeout(() => {
+        setIndex((prev) => (dir === 'right' ? (prev + 1) % n : (prev - 1 + n) % n));
+        setSliding(false);
+        setSlideDirection(null);
+      }, 400);
+      return;
+    }
 
     // Get the pixel width of one card
     const wrapper = trackRef.current?.parentElement;
@@ -360,9 +455,9 @@ function Testimonials() {
     }, 400);
   };
 
-  // Cards to render: index-1, index, index+1, index+2, index+3
-  // We show index through index+2, with index-1 hidden left and index+3 hidden right
-  const cards = [-1, 0, 1, 2, 3].map((o) => getReview(index + o));
+  const cards = isMobileCarousel
+    ? [getReview(index - 1), getReview(index), getReview(index + 1)]
+    : Array.from({ length: VISIBLE + 2 }, (_, i) => getReview(index + i - 1));
 
   return (
     <section className="testimonials-section">
@@ -383,15 +478,25 @@ function Testimonials() {
               ref={trackRef}
               className="testimonials-track"
               style={{
-                transform: `translateX(calc(-${cardWidthPercent}% + ${offset}px))`,
-                transition: sliding ? 'transform 0.4s ease' : 'none',
+                transform: isMobileCarousel
+                  ? (sliding
+                      ? slideDirection === 'right'
+                        ? `translateX(-${2 * mobileStep}px)`
+                        : 'translateX(0px)'
+                      : `translateX(-${mobileStep}px)`)
+                  : `translateX(calc(-${cardWidthPercent}% + ${offset}px))`,
+                transition: 'transform 0.4s ease',
               }}
             >
               {cards.map((review, i) => (
                 <div
                   className="testimonial-card"
                   key={i}
-                  style={{ flex: `0 0 calc(${cardWidthPercent}% - 1rem)` }}
+                  style={{
+                    flex: isMobileCarousel ? `0 0 ${mobileStep}px` : `0 0 calc(${cardWidthPercent}% - 1rem)`,
+                    width: isMobileCarousel ? `${mobileStep}px` : undefined,
+                    maxWidth: isMobileCarousel ? `${mobileStep}px` : undefined,
+                  }}
                 >
                   <div className="testimonial-quote">&ldquo;</div>
                   <p className="testimonial-text">{review.text}</p>
@@ -411,6 +516,7 @@ function Testimonials() {
         </div>
 
         <div className="testimonial-dots">
+          {/* Dot controls allow direct review navigation. */}
           {reviews.map((_, i) => (
             <button
               key={i}
@@ -434,7 +540,7 @@ function Testimonials() {
 function ContactModal({ isOpen, onClose }) {
   const [state, handleSubmit] = useForm('xeevvzkp');
 
-  // Close on Escape key
+  // Close the modal when the user presses Escape.
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) document.addEventListener('keydown', handleKey);
@@ -442,11 +548,13 @@ function ContactModal({ isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   // Prevent background scrolling while modal is open
+  // Freeze page scrolling behind the modal while it is open.
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Do not render the modal when it is closed.
   if (!isOpen) return null;
 
   return (
@@ -510,6 +618,7 @@ function ContactModal({ isOpen, onClose }) {
   );
 }
 
+// Home page with hero carousel, service cards, and the testimonial section.
 function HomePage({ onNavigate }) {
   const heroImages = [
     'images/fkitchen1.jpg.avif',
@@ -524,6 +633,7 @@ function HomePage({ onNavigate }) {
   const [prevImage, setPrevImage] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Rotate the hero carousel automatically every 4 seconds.
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => {
@@ -535,6 +645,7 @@ function HomePage({ onNavigate }) {
   }, []);
 
   const goToImage = (index) => {
+    // Save the current slide for exit animation.
     setPrevImage(currentImage);
     setCurrentImage(index);
   };
@@ -604,7 +715,7 @@ function HomePage({ onNavigate }) {
           <p className="section-subtitle" style={{ textAlign: 'center' }}>Our Services</p>
           {/* Top row — 3 cards */}
           <div className="work-grid work-grid-top">
-            <div className="work-card" onClick={(e) => { e.preventDefault(); onNavigate('kitchen-cabinets'); }}>
+            <div className="work-card" onClick={() => onNavigate('kitchen-cabinets')}>
               <div className="work-card-img">
                 <img src="/images/fkitchen9.jpg" alt="Kitchen Cabinets" />
               </div>
@@ -614,7 +725,7 @@ function HomePage({ onNavigate }) {
               </div>
             </div>
 
-            <div className="work-card" onClick={(e) => { e.preventDefault(); onNavigate('bathroom-vanities'); }}>
+            <div className="work-card" onClick={() => onNavigate('bathroom-vanities')}>
               <div className="work-card-img">
                 <img src="/images/fvanitie1.jpg.avif" alt="Bathroom Vanities" />
               </div>
@@ -624,7 +735,7 @@ function HomePage({ onNavigate }) {
               </div>
             </div>
 
-            <div className="work-card" onClick={(e) => { e.preventDefault(); onNavigate('bookcases'); }}>
+            <div className="work-card" onClick={() => onNavigate('bookcases')}>
               <div className="work-card-img">
                 <img src="/images/fbookcase1.jpg.webp" alt="Bookcases" />
               </div>
@@ -637,7 +748,7 @@ function HomePage({ onNavigate }) {
 
           {/* Bottom row — 2 cards, gap pinned to center */}
           <div className="work-grid work-grid-bottom">
-            <div className="work-card" onClick={(e) => { e.preventDefault(); onNavigate('entertainment-centers'); }}>
+            <div className="work-card" onClick={() => onNavigate('entertainment-centers')}>
               <div className="work-card-img">
                 <img src="/images/fentertainmentcenter1.jpg.avif" alt="Entertainment Centers" />
               </div>
@@ -647,7 +758,8 @@ function HomePage({ onNavigate }) {
               </div>
             </div>
 
-            <div className="work-card" onClick={(e) => { e.preventDefault(); onNavigate('fireplace-mantles'); }}>
+            {/* Each work card is clickable and navigates to the matching detail page. */}
+          <div className="work-card" onClick={() => onNavigate('fireplace-mantles')}>
               <div className="work-card-img">
                 <img src="/images/ffireplacemantle1.jpg.avif" alt="Fireplace Mantles" />
               </div>
@@ -670,6 +782,7 @@ function HomePage({ onNavigate }) {
   );
 }
 
+// Kitchen cabinets page placeholder. Uses the page header and optional gallery.
 function KitchenCabinetsPage({ onNavigate }) {
   return (
     <div className="page-content">
@@ -683,6 +796,7 @@ function KitchenCabinetsPage({ onNavigate }) {
   );
 }
 
+// Bathroom vanities page placeholder with breadcrumb navigation.
 function BathroomVanitiesPage({ onNavigate }) {
   return (
     <div className="page-content">
@@ -696,6 +810,7 @@ function BathroomVanitiesPage({ onNavigate }) {
   );
 }
 
+// Bookcases page placeholder content.
 function BookcasesPage({ onNavigate }) {
   return (
     <div className="page-content">
@@ -709,6 +824,7 @@ function BookcasesPage({ onNavigate }) {
   );
 }
 
+// Entertainment centers page with its own breadcrumb and gallery.
 function EntertainmentCentersPage({ onNavigate }) {
   return (
     <div className="page-content">
@@ -722,6 +838,7 @@ function EntertainmentCentersPage({ onNavigate }) {
   );
 }
 
+// Fireplace mantles page placeholder content.
 function FireplaceMantlesPage({ onNavigate }) {
   return (
     <div className="page-content">
@@ -735,9 +852,11 @@ function FireplaceMantlesPage({ onNavigate }) {
   );
 }
 
+// Portfolio page showing a grid of project images and a custom lightbox.
 function PortfolioPage({ onNavigate }) {
-  const [lightboxIndex, setLightboxIndex] = React.useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
+  // Images shown in the portfolio gallery.
   const portfolioImages = [
     { src: '/images/fkitchen5.jpg.avif', label: 'Kitchen' },
     { src: '/images/fkitchen2.jpg', label: 'Kitchen' },
@@ -756,10 +875,10 @@ function PortfolioPage({ onNavigate }) {
     { src: '/images/kitchen2.jpg', label: 'Kitchen' },
   ]
 
-  function openLightbox(index) {
-      return setLightboxIndex(index);
-    }
+  const openLightbox = (index) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
+  // Lightbox arrow buttons should not close the overlay on click.
+  // Prevent click-through while navigating the lightbox.
   const goPrev = (e) => {
     e.stopPropagation();
     setLightboxIndex((i) => (i - 1 + portfolioImages.length) % portfolioImages.length);
@@ -769,7 +888,8 @@ function PortfolioPage({ onNavigate }) {
     setLightboxIndex((i) => (i + 1) % portfolioImages.length);
   };
 
-  React.useEffect(() => {
+  // Add keyboard navigation for the portfolio lightbox.
+  useEffect(() => {
     const handleKey = (e) => {
       if (lightboxIndex === null) return;
       if (e.key === 'Escape') closeLightbox();
@@ -842,8 +962,9 @@ function PortfolioPage({ onNavigate }) {
   );
 }
 
+// About page with company overview and a call-to-action button.
 function AboutPage({ onNavigate }) {
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   return (
     <div className="page-content" style={{ 
       backgroundImage: 'url("/images/woodbackground.jpg.avif")',
@@ -918,10 +1039,12 @@ function AboutPage({ onNavigate }) {
   );
 }
 
+// Contact page containing the lead form, contact details, and map.
 function ContactPage({ onNavigate }) {
   const [state, handleSubmit] = useForm('xeevvzkp');
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
+  // If the contact form was submitted, show the thank-you state instead of the form.
   if (state.succeeded) {
     return (
       <div className="page-content contact-page">
@@ -935,6 +1058,7 @@ function ContactPage({ onNavigate }) {
 
   return (
     <div className="page-content contact-page">
+      {/* Hero image and headline for the contact page. */}
       <section className="hero-section"
         style={{ backgroundImage: "url('/images/fkitchen6.jpg.avif')" }}
       >
@@ -1033,6 +1157,7 @@ function ContactPage({ onNavigate }) {
    7. APP BOOTSTRAP & METADATA
    ═══════════════════════════════════════════════════════════════ */
 
+// Map page keys to page titles and page components.
 const PAGE_META = {
   'home': { title: 'Heritage Wood Co. | Home', Component: HomePage },
   'kitchen-cabinets': { title: 'Heritage Wood Co. | Kitchen Cabinets', Component: KitchenCabinetsPage },
@@ -1045,9 +1170,11 @@ const PAGE_META = {
   'contact': { title: 'Heritage Wood Co. | Contact Us', Component: ContactPage },
 };
 
+// Main app wrapper managing current page state and rendering the selected page.
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
+  // Update the browser tab title and reset scroll on page change.
   useEffect(() => {
     if (PAGE_META[currentPage]) {
       document.title = PAGE_META[currentPage].title;
@@ -1055,6 +1182,7 @@ function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
+  // Fallback to HomePage if the current page key is not found.
   const CurrentComponent = PAGE_META[currentPage]?.Component || HomePage;
 
   return (
