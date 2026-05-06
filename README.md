@@ -87,7 +87,7 @@ user submits the form, an HTTP POST request is sent to:
 https://formspree.io/f/xeevvzkp
 
 Formspree receives it, processes it, and forwards it as an email to 
-the business owner. No custom backend server is required.
+my Dad. No backend server is needed.
 
 > **Note:** The current Formspree account is on the free tier, which 
 > has a cap of 50 submissions per month.

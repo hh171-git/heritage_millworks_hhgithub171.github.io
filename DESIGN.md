@@ -67,7 +67,7 @@ myself gave me full control over all the visual designs.
 
 ## Why Formspree?
 
-One of my BEST outcome goals was a quote form for customers. I wanted
+One of my BEST outcome goals was a contact form for customers. I wanted
 to implement a form that didn't require a backend, and Formspree offered that. 
 It receives the form data through an HTTP POST request 
 and then forwards it as an email to my Dad, with no server required on my end. The 
@@ -143,10 +143,11 @@ stylesheet.
 ## What I Would Do Differently
 
 - **Split components into separate files** — everything lives in one 
-`app.jsx` file, which got long. A `/components` folder with one file 
-per component would have been easier to navigate.
+ file, which got long. A `/components` folder with one file  would have
+ made it easier for me to navigate.
 - **Finish the service gallery pages** — the individual pages for 
 Kitchen Cabinets, Bathroom Vanities, Bookcases, Entertainment Centers, 
-and Fireplace Mantles are all built but still waiting to be finished. 
+and Fireplace Mantles are all built but still waiting to be finished. I 
+should have pushed harder to get these done. 
 - **Improve mobile responsiveness** — the site has some responsive 
-CSS but certain pages still need work.
+CSS but certain pages still need work, specifically for the mobile.
